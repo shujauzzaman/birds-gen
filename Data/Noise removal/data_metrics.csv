@@ -1,0 +1,6 @@
+Metric,Stage,Value
+Image Count,Initial (Raw Data),11796
+Image Count,After Deduplication,11779
+Image Count,After Blur Filter,11492
+Image Quality (Laplacian),Before Blur Filter,1382.301942391146
+Image Quality (Laplacian),After Blur Filter,1415.1002450584092
