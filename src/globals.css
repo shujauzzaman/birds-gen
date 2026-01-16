@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+.scroll-container {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+
+body {
+    @apply bg-neutral-100 text-neutral-900;
+}
+
+.selected-region{
+    @apply px-4 py-1 rounded bg-neutral-900 text-neutral-100 transition-all;
+}
+
+.unselected-region{
+    @apply px-4 py-1 rounded hover:bg-neutral-900 hover:text-neutral-100 transition-all;
+}
+
+h1.feature-title{
+    @apply text-2xl font-bold;
+}
+
