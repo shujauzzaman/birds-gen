@@ -1,92 +1,83 @@
-import FeatureCard from "./ui/FeatureCard";
-
-interface Feature {
-    selectedRegion: string;
-    setSelectedFeatures: (feature: string, value: { name: string; image: string }) => void;
-}
-
-export default function FeaturesMenu ({selectedRegion, setSelectedFeatures}: Feature) {
-
-    const features = {
+export const features = {
   "Whole": {
     "Shape": [
       {
         "name": "upright-perching_water-like",
-        "image": "/images/whole/shape/upright-perching-water-like.jpg"
+        "image": "/images/whole/shape/upright-perching-water-like.png"
       },
       {
         "name": "chicken-like-marsh",
-        "image": "/images/whole/shape/chicken-like-marsh.jpg"
+        "image": "/images/whole/shape/chicken-like-marsh.png"
       },
       {
         "name": "long-legged-like",
-        "image": "/images/whole/shape/long-legged-like.jpg"
+        "image": "/images/whole/shape/long-legged-like.png"
       },
       {
         "name": "duck-like",
-        "image": "/images/whole/shape/duck-like.jpg"
+        "image": "/images/whole/shape/duck-like.png"
       },
       {
         "name": "owl-like",
-        "image": "/images/whole/shape/owl-like.jpg"
+        "image": "/images/whole/shape/owl-like.png"
       },
       {
         "name": "gull-like",
-        "image": "/images/whole/shape/gull-like.jpg"
+        "image": "/images/whole/shape/gull-like.png"
       },
       {
         "name": "hummingbird-like",
-        "image": "/images/whole/shape/hummingbird-like.jpg"
+        "image": "/images/whole/shape/hummingbird-like.png"
       },
       {
         "name": "pigeon-like",
-        "image": "/images/whole/shape/pigeon-like.jpg"
+        "image": "/images/whole/shape/pigeon-like.png"
       },
       {
         "name": "tree-clinging-like",
-        "image": "/images/whole/shape/tree-clinging-like.jpg"
+        "image": "/images/whole/shape/tree-clinging-like.png"
       },
       {
         "name": "hawk-like",
-        "image": "/images/whole/shape/hawk-like.jpg"
+        "image": "/images/whole/shape/hawk-like.png"
       },
       {
         "name": "sandpiper-like",
-        "image": "/images/whole/shape/sandpiper-like.jpg"
+        "image": "/images/whole/shape/sandpiper-like.png"
       },
       {
         "name": "upland-ground-like",
-        "image": "/images/whole/shape/upland-ground-like.jpg"
+        "image": "/images/whole/shape/upland-ground-like.png"
       },
       {
         "name": "swallow-like",
-        "image": "/images/whole/shape/swallow-like.jpg"
+        "image": "/images/whole/shape/swallow-like.png"
       },
       {
         "name": "perching-like",
-        "image": "/images/whole/shape/perching-like.jpg"
+        "image": "/images/whole/shape/perching-like.png"
       }
     ],
     "Size": [
       {
         "name": "very_small_(3_-_5_in)",
-        "image": "/images/whole/size/very-small.jpg"
+        "image": "/images/whole/size/very-small-3---5-in.png"
       },
       {
         "name": "small_(5_-_9_in)",
-        "image": "/images/whole/size/small.jpg"
+        "image": "/images/whole/size/small-5---9-in.png"
       },
       {
         "name": "medium_(9_-_16_in)",
-        "image": "/images/whole/size/medium.jpg"
+        "image": "/images/whole/size/medium-9---16-in.png"
       },
       {
         "name": "large_(16_-_32_in)",
-        "image": "/images/whole/size/large.jpg"
+        "image": "/images/whole/size/large-16---32-in.png"
       },
       {
         "name": "very_large_(32_-_72_in)",
-        "image": "/images/whole/size/very-large.jpg"
+        "image": "/images/whole/size/very-large-32---72-in.png"
       }
     ],
     "Primary Color": [
@@ -1331,30 +1322,3 @@ export default function FeaturesMenu ({selectedRegion, setSelectedFeatures}: Fea
     ]
   }
 };
-
-    return (
-        <div>
-            {selectedRegion && (
-                <div>
-                    {Object.entries(features[selectedRegion as keyof typeof features] || {}).map(([feature, values]) => (
-                        <div key={feature}>
-                            <h1 className="feature-title">{feature}</h1>
-                            <div className="grid grid-flow-col auto-cols-max gap-4 overflow-x-auto py-2 scroll-container"> 
-                                {values.map((value) => (
-                                    <FeatureCard
-                                        key={value.name}
-                                        onClick={() => setSelectedFeatures(feature, value)}
-                                        name={value.name}
-                                        image={value.image}
-                                    />
-
-                                ))}
-
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
