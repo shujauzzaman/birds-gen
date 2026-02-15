@@ -127,10 +127,6 @@ export default function FeaturesMenu ({selectedRegion, setSelectedFeatures}: Fea
         "image": "/images/whole/primary-color/green.png"
       },
       {
-        "name": "pink",
-        "image": "/images/whole/primary-color/pink.png"
-      },
-      {
         "name": "orange",
         "image": "/images/whole/primary-color/orange.png"
       },
