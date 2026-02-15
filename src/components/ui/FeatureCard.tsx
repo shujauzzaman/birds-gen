@@ -1,14 +1,36 @@
-interface featureCardProps {
-    name: string;
-    onClick?: () => void;
-    image?: string;
+function prettyLabel(raw: string) {
+  return raw.replaceAll("_", " ").replaceAll("-", " ").trim();
 }
 
-export default function FeatureCard({name, onClick, image}: featureCardProps) {
-    return (
-        <div className="border border-neutral-700 bg-neutral-200 hover:bg-neutral-300 hover:cursor-pointer rounded p-2" onClick={onClick}>
-            <img className="w-48 h-48 object-cover rounded" src={image} alt="image" />
-            <p>{name}</p>
-        </div>
-    );
+export default function FeatureCard({
+  name,
+  image,
+  selected,
+  onClick,
+}: {
+  name: string;
+  image: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={["feature-card", selected ? "feature-card-selected" : ""].join(" ")}
+    >
+      {/* image */}
+      <div className="feature-imgWrap">
+        <img src={image} alt={name} className="feature-img" />
+      </div>
+
+      {/* caption area (fixed height so alignment stays perfect) */}
+      <div className="feature-caption">
+        <div className="feature-titleText">{prettyLabel(name)}</div>
+      </div>
+
+      {/* selected badge is overlay (does NOT change card height) */}
+      {selected && <div className="feature-badge">Selected</div>}
+    </button>
+  );
 }
