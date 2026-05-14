@@ -9,8 +9,14 @@ export default function FeaturesMenu({
   onClearFeature,
 }: {
   selectedRegion: string;
-  selectedFeatures: Record<string, { name: string; image: string; region: string; feature: string }>;
-  onSelectFeature: (key: string, value: { name: string; image: string; region: string; feature: string }) => void;
+  selectedFeatures: Record<
+    string,
+    { name: string; prompt: string; region: string; feature: string }
+  >;
+  onSelectFeature: (
+    key: string,
+    value: { name: string; prompt: string; region: string; feature: string }
+  ) => void;
   onClearFeature: (key: string) => void;
 }) {
   if (!selectedRegion) {
@@ -23,17 +29,20 @@ export default function FeaturesMenu({
     <div className="space-y-7">
       {Object.entries(regionData).map(([featureName, values]) => {
         const key = `${selectedRegion}|${featureName}`;
-        const isSelected = !!selectedFeatures[key];
+        const selected = selectedFeatures[key];
 
         return (
           <section key={key}>
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <h3 className="section-title">{featureName}</h3>
-                <span className="chip">{isSelected ? "Selected" : "Pick one"}</span>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div>
+                <div className="section-title">{featureName}</div>
+
+                <div className="text-xs text-white/50 mt-1">
+                  {selected ? `Selected: ${selected.name}` : "Pick one option"}
+                </div>
               </div>
 
-              {isSelected && (
+              {selected && (
                 <button
                   type="button"
                   className="text-xs text-lime-200/80 hover:text-lime-200 underline underline-offset-4"
@@ -49,12 +58,13 @@ export default function FeaturesMenu({
                 <FeatureCard
                   key={value.name}
                   name={value.name}
-                  image={value.image}
-                  selected={selectedFeatures[key]?.name === value.name}
+                  icon={value.icon}
+                  color={value.color}
+                  selected={selected?.name === value.name}
                   onClick={() =>
                     onSelectFeature(key, {
                       name: value.name,
-                      image: value.image,
+                      prompt: value.prompt,
                       region: selectedRegion,
                       feature: featureName,
                     })

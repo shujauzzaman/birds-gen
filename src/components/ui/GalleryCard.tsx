@@ -5,9 +5,23 @@ export default function GalleryCard({
   title: string;
   image: string;
 }) {
+  async function download() {
+    const response = await fetch(image);
+    const blob = await response.blob();
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title.replaceAll(" ", "-").toLowerCase()}.png`;
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="card overflow-hidden group">
-      {/* Image */}
       <div className="relative aspect-[4/3] bg-black/30">
         <img
           src={image}
@@ -15,26 +29,21 @@ export default function GalleryCard({
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
 
-        {/* Download button */}
+        {/* download button */}
         <button
           type="button"
           title="Download"
-          className="
-            gallery-download
-            absolute
-            bottom-3
-            right-3
-          "
+          className="gallery-download"
+          onClick={download}
         >
           <img
-            src="src/assets/icons/download.svg"
-            alt="Download"
-            className="h-5 w-5"
+            src="/src/assets/icons/download.svg"
+            alt="download"
+            className="gallery-download-icon"
           />
         </button>
       </div>
 
-      {/* Title */}
       <div className="px-4 py-3">
         <div className="text-sm font-semibold text-white/90 truncate">
           {title}

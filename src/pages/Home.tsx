@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import GalleryCard from "../components/ui/GalleryCard";
@@ -6,92 +5,65 @@ import { MOCK_GALLERY } from "../data/mockGallery";
 
 export default function Home() {
   const nav = useNavigate();
-  const [q, setQ] = useState("");
-
-  const items = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return MOCK_GALLERY;
-    return MOCK_GALLERY.filter((x) => x.title.toLowerCase().includes(s));
-  }, [q]);
 
   return (
     <div className="min-h-screen bg-hero">
-      {/* dark overlay */}
-      <div className="min-h-screen bg-black/55">
+      <div className="min-h-screen site-overlay">
         <Navbar />
 
-        <div className="mx-auto max-w-6xl px-4 py-10">
-          <h1 className="text-center text-4xl sm:text-5xl font-extrabold tracking-tight">
-            Featured AI-Generated Images
-          </h1>
+        <main className="mx-auto max-w-6xl px-4 py-12">
+          <section className="home-hero-card">
+            <div className="home-kicker">AI Bird Image Generator</div>
 
-         <div className="mt-6 mx-auto max-w-xl">
-  <div className="search">
-    <span className="search-icon" aria-hidden="true">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        className="search-svg"
-      >
-        <path
-          d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path
-          d="M16.5 16.5 21 21"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
-    </span>
+            <h1 className="home-title">
+              Create realistic bird images
+              <br />
+              from simple visual features
+            </h1>
 
-    <input
-      className="search-input"
-      placeholder="Search birds, e.g. parrot..."
-      value={q}
-      onChange={(e) => setQ(e.target.value)}
-    />
+            <p className="home-subtitle">
+              Choose body shape, beak, wings, colors, tail and other bird
+              features. BirdsGen builds a clean prompt and generates a
+              realistic bird image.
+            </p>
 
-    {q.trim() && (
-      <button className="search-clear" type="button" onClick={() => setQ("")}>
-        Clear
-      </button>
-    )}
-  </div>
-</div>
+            <div className="home-actions">
+              <button className="home-primary-btn" onClick={() => nav("/generate")}>
+                Generate Your Bird
+              </button>
 
-
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {items.map((it, idx) => (
-              <GalleryCard key={idx} title={it.title} image={it.image} />
-            ))}
-          </div>
-
-          <div className="mt-12 border-t border-white/10 pt-10">
-            <h2 className="text-center text-3xl sm:text-4xl font-extrabold">
-              Genrate Your Own
-            </h2>
-
-            <div className="mt-6 flex justify-center">
-              <button className="btn-primary px-12 py-3" onClick={() => nav("/generate")}>
-                Generate
+              <button
+                className="home-secondary-btn"
+                onClick={() =>
+                  document
+                    .getElementById("featured-gallery")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                View Gallery
               </button>
             </div>
-          </div>
+          </section>
 
-          <div className="mt-16 pb-10 flex justify-center">
-  <div className="text-center max-w-3xl">
-    <div className="text-4xl sm:text-5xl font-extrabold leading-tight">
-      Explore the beauty of avian life
-      <br />
-      through stunning photography
-    </div>
-  </div>
-</div>
+          <section id="featured-gallery" className="home-section">
+            <div className="home-section-head">
+              <div>
+                <div className="home-kicker">Gallery</div>
+                <h2 className="home-section-title">Featured AI Birds</h2>
+              </div>
 
-        </div>
+              <button className="home-small-btn" onClick={() => nav("/generate")}>
+                Create New
+              </button>
+            </div>
+
+            <div className="mt-7 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {MOCK_GALLERY.map((it, idx) => (
+                <GalleryCard key={idx} title={it.title} image={it.image} />
+              ))}
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   );

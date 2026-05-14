@@ -1,107 +1,82 @@
-export type SelectedMap = Record<
-  string,
-  { name: string; image: string; region: string; feature: string }
->;
+import type { SelectedFeatures } from "./storage";
+import { getSpeciesProfile } from "./data/speciesProfiles";
 
 export const REQUIRED_KEYS = [
   "Whole|Shape",
   "Whole|Size",
   "Whole|Primary Color",
   "Beak|Bill Shape",
-  "Beak|Bill Color",
-] as const;
-
-export type RequiredKey = (typeof REQUIRED_KEYS)[number];
-
-const ORDER = [
-  "Whole|Shape",
-  "Whole|Size",
-  "Whole|Primary Color",
-  "Whole|Upperparts Color",
-  "Whole|Underparts Color",
-  "Beak|Bill Shape",
-  "Beak|Bill Length",
-  "Beak|Bill Color",
-  "Head|Head Pattern",
-  "Head|Eye Color",
   "Wings|Wing Shape",
-  "Wings|Wing Pattern",
-  "Wings|Wing Color",
   "Tail|Tail Shape",
-  "Tail|Tail Pattern",
-] as const;
+];
 
-function cleanToken(v: string) {
-  return v.replaceAll("_", " ").replaceAll("-", " ").replace(/\s+/g, " ").trim();
-}
+const QUALITY_PROMPT = [
+  "realistic wildlife photograph",
+  "single bird only",
+  "full bird visible",
+  "natural bird anatomy",
+  "accurate beak shape",
+  "accurate wing shape",
+  "accurate tail shape",
+  "detailed feather texture",
+  "sharp focus",
+  "natural soft lighting",
+  "clean natural background",
+  "professional bird photography",
+];
 
-function toNaturalPhrase(region: string, feature: string, raw: string) {
-  const v = cleanToken(raw);
-  const r = region.toLowerCase();
-  const f = feature.toLowerCase();
+const NEGATIVE_PROMPT = [
+  "cartoon",
+  "anime",
+  "illustration",
+  "painting",
+  "drawing",
+  "cgi",
+  "3d render",
+  "low quality",
+  "blurry",
+  "bad anatomy",
+  "deformed bird",
+  "mutated bird",
+  "extra wings",
+  "extra legs",
+  "extra beak",
+  "two heads",
+  "wrong proportions",
+  "human",
+  "text",
+  "watermark",
+  "logo",
+];
 
-  if (r === "whole" && f.includes("primary color")) return `${v} feathers`;
-  if (r === "whole" && f === "size") return `${v} size`;
-  if (r === "whole" && f === "shape") return `${v} body shape`;
+export function buildPrompt(selected: SelectedFeatures, species = "") {
+  const missing = REQUIRED_KEYS.filter((key) => !selected[key]);
 
-  if (r === "beak" && f.includes("bill shape")) return `${v} beak`;
-  if (r === "beak" && f.includes("bill color")) return `${v} beak color`;
-  if (r === "beak" && f.includes("bill length")) return `${v} beak length`;
+  const hasSpecies = species.trim().length > 0;
+  const speciesName = species.trim();
+  const speciesProfile = hasSpecies ? getSpeciesProfile(speciesName) : "";
 
-  if (r === "head" && f.includes("eye color")) return `${v} eyes`;
-  if (r === "head" && f.includes("head pattern")) return `${v} head pattern`;
+  const selectedParts = Object.values(selected)
+    .map((item) => item.prompt || item.name)
+    .filter(Boolean);
 
-  return `${v} ${feature.toLowerCase()}`;
-}
+  const promptParts = [
+    hasSpecies
+      ? `realistic wildlife photograph of a ${speciesName}`
+      : "realistic wildlife photograph of a bird",
 
-export type PromptResult = {
-  positive: string;
-  negative: string;
-  missing: RequiredKey[];
-  blockedReasons: string[];
-  phrases: string[];
-  requiredKeys: RequiredKey[]; // ✅ added
-};
+    speciesProfile,
 
-export function buildPrompt(selected: SelectedMap): PromptResult {
-  const missing: RequiredKey[] = REQUIRED_KEYS.filter((k) => !selected[k]);
+    ...selectedParts,
 
-  const blockedReasons: string[] = [];
-  const shape = selected["Whole|Shape"]?.name ?? "";
-  const size = selected["Whole|Size"]?.name ?? "";
-  if (shape.includes("hummingbird") && size.includes("very_large")) {
-    blockedReasons.push("Hummingbird-like shape cannot be Very Large in allowed set.");
-  }
-
-  const keys = Object.keys(selected);
-  const sorted = [
-    ...ORDER.filter((k) => keys.includes(k)),
-    ...keys.filter((k) => !ORDER.includes(k as any)),
-  ];
-
-  // ✅ keep prompt short: max 10 phrases
-  const phrases = sorted
-    .map((k) => {
-      const s = selected[k];
-      return toNaturalPhrase(s.region, s.feature, s.name);
-    })
-    .slice(0, 10);
-
-  // ✅ Realistic but SHORT
-  const positive =
-    phrases.length === 0
-      ? "A realistic bird photo."
-      : `A realistic bird photo with ${phrases.join(", ")}. Natural colors, natural anatomy.`;
-
-  const negative =
-    "cartoon, anime, illustration, cgi, 3d render, toy, plastic, blurry, low quality, deformed, extra wings, extra legs, wrong anatomy, unrealistic colors, text, watermark, logo";
+    ...QUALITY_PROMPT,
+  ].filter(Boolean);
 
   return {
-    positive,
-    negative,
+    positive: promptParts.join(", "),
+    negative: NEGATIVE_PROMPT.join(", "),
+    phrases: promptParts,
     missing,
-    blockedReasons,
-    phrases,
-    requiredKeys: [...REQUIRED_KEYS], // ✅ added
+    blockedReasons: [],
   };
 }

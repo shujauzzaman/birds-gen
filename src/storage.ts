@@ -1,23 +1,36 @@
-const KEY = "birdsgen:selected";
+const SELECTED_KEY = "birdgen_selected_features";
+const SPECIES_KEY = "birdgen_selected_species";
 
-export function loadSelected() {
+export type SelectedFeature = {
+  name: string;
+  prompt: string;
+  region: string;
+  feature: string;
+};
+
+export type SelectedFeatures = Record<string, SelectedFeature>;
+
+export function loadSelected(): SelectedFeatures {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return {};
-    return JSON.parse(raw);
+    return JSON.parse(localStorage.getItem(SELECTED_KEY) || "{}");
   } catch {
     return {};
   }
 }
 
-export function saveSelected(v: any) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(v));
-  } catch {}
+export function saveSelected(value: SelectedFeatures) {
+  localStorage.setItem(SELECTED_KEY, JSON.stringify(value));
 }
 
 export function clearSelected() {
-  try {
-    localStorage.removeItem(KEY);
-  } catch {}
+  localStorage.removeItem(SELECTED_KEY);
+  localStorage.removeItem(SPECIES_KEY);
+}
+
+export function loadSpecies() {
+  return localStorage.getItem(SPECIES_KEY) || "";
+}
+
+export function saveSpecies(species: string) {
+  localStorage.setItem(SPECIES_KEY, species);
 }

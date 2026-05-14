@@ -5,7 +5,17 @@ export default function RegionMenu({
   selectedRegion: string;
   setSelectedRegion: (region: string) => void;
 }) {
-  const regions = ["Whole", "Beak", "Head", "Wings", "Breast", "Belly", "Back", "Feet", "Tail"];
+  const regions = [
+    "Whole",
+    "Beak",
+    "Head",
+    "Wings",
+    "Breast",
+    "Belly",
+    "Back",
+    "Feet",
+    "Tail",
+  ];
 
   return (
     <div className="flex flex-col gap-2">
@@ -26,25 +36,11 @@ export default function RegionMenu({
             ].join(" ")}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* left indicator bar */}
-                <span
-                  className={[
-                    "h-5 w-1 rounded-full transition",
-                    active ? "bg-lime-300 shadow-[0_0_10px_rgba(163,230,53,0.55)]" : "bg-white/10",
-                  ].join(" ")}
-                />
-                <span className={active ? "text-lime-100 font-semibold" : "text-white/75"}>
-                  {r}
-                </span>
-              </div>
+              <span className={active ? "text-lime-100 font-semibold" : "text-white/75"}>
+                {r}
+              </span>
 
-              <span
-                className={[
-                  "text-lg leading-none transition",
-                  active ? "text-lime-300" : "text-white/25 group-hover:text-white/45",
-                ].join(" ")}
-              >
+              <span className={active ? "text-lime-300" : "text-white/25"}>
                 ›
               </span>
             </div>

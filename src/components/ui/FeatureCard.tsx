@@ -1,15 +1,16 @@
-function prettyLabel(raw: string) {
-  return raw.replaceAll("_", " ").replaceAll("-", " ").trim();
-}
+import type { LucideIcon } from "lucide-react";
+import { Check } from "lucide-react";
 
 export default function FeatureCard({
   name,
-  image,
+  icon: Icon,
+  color,
   selected,
   onClick,
 }: {
   name: string;
-  image: string;
+  icon: LucideIcon;
+  color?: string;
   selected: boolean;
   onClick: () => void;
 }) {
@@ -17,20 +18,28 @@ export default function FeatureCard({
     <button
       type="button"
       onClick={onClick}
-      className={["feature-card", selected ? "feature-card-selected" : ""].join(" ")}
+      className={selected ? "feature-card feature-card-selected" : "feature-card"}
     >
-      {/* image */}
-      <div className="feature-imgWrap">
-        <img src={image} alt={name} className="feature-img" />
+      {selected && (
+        <div className="feature-check-only">
+          <Check size={16} strokeWidth={4} />
+        </div>
+      )}
+
+      <div className="feature-iconWrap">
+        <Icon
+          size={38}
+          strokeWidth={2.4}
+          style={{
+            color: color || "#d8dee9",
+            stroke: color || "#d8dee9",
+          }}
+        />
       </div>
 
-      {/* caption area (fixed height so alignment stays perfect) */}
       <div className="feature-caption">
-        <div className="feature-titleText">{prettyLabel(name)}</div>
+        <div className="feature-titleText">{name}</div>
       </div>
-
-      {/* selected badge is overlay (does NOT change card height) */}
-      {selected && <div className="feature-badge">Selected</div>}
     </button>
   );
 }
