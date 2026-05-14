@@ -7,6 +7,9 @@ import { loadSelected, loadSpecies } from "../storage";
 import { buildPrompt } from "../prompt";
 import { generateBirdImage } from "../api";
 
+import downloadIcon from "../assets/icons/download.svg";
+import birdsHouse from "../assets/icons/birds_house.svg";
+
 export default function PromptReview() {
   const selected = useMemo(() => loadSelected(), []);
   const species = useMemo(() => loadSpecies(), []);
@@ -66,7 +69,11 @@ export default function PromptReview() {
 
     a.download = `birdsgen-${Date.now()}.png`;
 
+    document.body.appendChild(a);
+
     a.click();
+
+    document.body.removeChild(a);
 
     URL.revokeObjectURL(url);
   }
@@ -82,7 +89,7 @@ export default function PromptReview() {
       <div className="min-h-screen site-overlay">
         <Navbar />
 
-        <main className="mx-auto max-w-6xl px-4 pt-8 pb-10">
+        <main className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 pt-6 md:pt-8 pb-10">
           <div className="preview-layout">
             {/* LEFT */}
             <section className="preview-left">
@@ -117,7 +124,7 @@ export default function PromptReview() {
                     Using predefined species prompt
                   </div>
 
-                  <div className="mt-1 text-sm text-white/70">
+                  <div className="mt-1 text-sm text-white/70 break-words">
                     Species: {species}
                   </div>
                 </div>
@@ -207,7 +214,7 @@ export default function PromptReview() {
                       onClick={downloadImage}
                     >
                       <img
-                        src="/src/assets/icons/download.svg"
+                        src={downloadIcon}
                         alt="download"
                         className="preview-download-icon"
                       />
@@ -216,7 +223,7 @@ export default function PromptReview() {
                 ) : (
                   <div className="preview-empty">
                     <img
-                      src="/src/assets/images/birds_house.svg"
+                      src={birdsHouse}
                       alt="Bird house"
                       className="preview-empty-svg"
                     />

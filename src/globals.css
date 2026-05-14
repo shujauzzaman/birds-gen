@@ -1373,3 +1373,29 @@ body {
   filter:
     drop-shadow(0 4px 10px rgba(0,0,0,0.35));
 }
+.builder-main-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.builder-features-scroll {
+  overflow-x: hidden;
+}
+
+.required-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.required-chip {
+  max-width: 100%;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.builder-prompt-text {
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+}

@@ -1,53 +1,43 @@
-export default function GalleryCard({
-  title,
-  image,
-}: {
+import { Download } from "lucide-react";
+
+type GalleryCardProps = {
   title: string;
   image: string;
-}) {
-  async function download() {
-    const response = await fetch(image);
-    const blob = await response.blob();
+};
 
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${title.replaceAll(" ", "-").toLowerCase()}.png`;
-
-    a.click();
-
-    URL.revokeObjectURL(url);
-  }
+export default function GalleryCard({ title, image }: GalleryCardProps) {
+  const handleDownload = async () => {
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `${title}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
-    <div className="card overflow-hidden group">
-      <div className="relative aspect-[4/3] bg-black/30">
+    <div className="group overflow-hidden rounded-2xl border border-white/10 bg-black/30">
+      <div className="relative h-44 sm:h-48 md:h-52 overflow-hidden">
         <img
           src={image}
           alt={title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
-        {/* download button */}
         <button
           type="button"
-          title="Download"
-          className="gallery-download"
-          onClick={download}
+          onClick={handleDownload}
+          className="absolute left-3 bottom-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/75 text-white border border-white/20 shadow-lg backdrop-blur-md hover:bg-black"
+          aria-label="Download image"
         >
-          <img
-            src="/src/assets/icons/download.svg"
-            alt="download"
-            className="gallery-download-icon"
-          />
+          <Download size={18} strokeWidth={2.5} />
         </button>
       </div>
 
-      <div className="px-4 py-3">
-        <div className="text-sm font-semibold text-white/90 truncate">
+      <div className="p-4">
+        <h3 className="text-sm font-bold text-white line-clamp-1">
           {title}
-        </div>
+        </h3>
       </div>
     </div>
   );

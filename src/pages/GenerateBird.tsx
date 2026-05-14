@@ -21,9 +21,8 @@ export default function GenerateBird() {
 
   const [selectedRegion, setSelectedRegion] = useState("Whole");
   const [selectedSpecies, setSelectedSpecies] = useState(() => loadSpecies());
-  const [selectedFeatures, setSelectedFeatures] = useState<SelectedFeatures>(() =>
-    loadSelected()
-  );
+  const [selectedFeatures, setSelectedFeatures] =
+    useState<SelectedFeatures>(() => loadSelected());
 
   const hasSpecies = selectedSpecies.trim().length > 0;
 
@@ -76,9 +75,6 @@ export default function GenerateBird() {
   function handleSpeciesChange(value: string) {
     setSelectedSpecies(value);
 
-    // Optional but recommended:
-    // when species is selected, remove feature selections
-    // so prompt is fully species-based.
     if (value.trim().length > 0) {
       setSelectedFeatures({});
       clearSelected();
@@ -96,215 +92,224 @@ export default function GenerateBird() {
       <div className="min-h-screen bg-black/55">
         <Navbar />
 
-        <div className="mx-auto max-w-6xl px-4 py-8 grid grid-cols-12 gap-4">
-          <aside className="col-span-12 md:col-span-3">
-            <div className="card p-4">
-              <div className="flex items-center justify-between">
-                <div className="font-extrabold">Bird Builder</div>
+        <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 py-4 md:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <aside className="col-span-12 lg:col-span-3">
+              <div className="card p-3 sm:p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="font-extrabold text-base sm:text-lg">
+                    Bird Builder
+                  </div>
 
-                <button className="btn-ghost" type="button" onClick={resetAll}>
-                  Reset
-                </button>
-              </div>
-
-              <div className="mt-4">
-                <div className="text-sm font-bold mb-2">
-                  Bird Species{" "}
-                  <span className="text-white/40">(Optional)</span>
+                  <button
+                    className="btn-ghost shrink-0"
+                    type="button"
+                    onClick={resetAll}
+                  >
+                    Reset
+                  </button>
                 </div>
 
-                <select
-                  className="w-full rounded-xl border border-white/10 bg-[#111] px-4 py-3 text-white outline-none cursor-pointer"
-                  value={selectedSpecies}
-                  onChange={(e) => handleSpeciesChange(e.target.value)}
-                >
-                  <option
-                    value=""
-                    style={{
-                      backgroundColor: "#111",
-                      color: "white",
-                    }}
-                  >
-                    No species, use features only
-                  </option>
+                <div className="mt-4">
+                  <div className="text-sm font-bold mb-2">
+                    Bird Species{" "}
+                    <span className="text-white/40">(Optional)</span>
+                  </div>
 
-                  {BIRD_SPECIES.map((s) => (
+                  <select
+                    className="w-full rounded-xl border border-white/10 bg-[#111] px-3 sm:px-4 py-3 text-white outline-none cursor-pointer text-sm sm:text-base"
+                    value={selectedSpecies}
+                    onChange={(e) => handleSpeciesChange(e.target.value)}
+                  >
                     <option
-                      key={s}
-                      value={s}
+                      value=""
                       style={{
                         backgroundColor: "#111",
                         color: "white",
                       }}
                     >
-                      {s}
+                      No species, use features only
                     </option>
-                  ))}
-                </select>
-              </div>
 
-              {!hasSpecies && (
-                <div className="mt-5">
-                  <div className="text-sm font-bold mb-2">
-                    Feature Regions
-                  </div>
-
-                  <RegionMenu
-                    selectedRegion={selectedRegion}
-                    setSelectedRegion={setSelectedRegion}
-                  />
-                </div>
-              )}
-
-              <div className="mt-5 rounded-xl bg-black/30 p-3">
-                <div className="text-sm font-bold">Progress</div>
-
-                <div className="mt-1 text-sm text-white/70">
-                  Species: {selectedSpecies || "Optional / Not selected"}
+                    {BIRD_SPECIES.map((s) => (
+                      <option
+                        key={s}
+                        value={s}
+                        style={{
+                          backgroundColor: "#111",
+                          color: "white",
+                        }}
+                      >
+                        {s}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {!hasSpecies && (
-                  <>
-                    <div className="text-sm text-white/70">
-                      Features selected: {selectedCount}
+                  <div className="mt-5">
+                    <div className="text-sm font-bold mb-2">
+                      Feature Regions
                     </div>
 
-                    <div className="text-sm text-white/70">
-                      Required: {completedRequired}/{REQUIRED_KEYS.length}
-                    </div>
-                  </>
-                )}
-
-                {hasSpecies && (
-                  <div className="text-sm text-lime-200 mt-1">
-                    Species prompt ready
+                    <RegionMenu
+                      selectedRegion={selectedRegion}
+                      setSelectedRegion={setSelectedRegion}
+                    />
                   </div>
                 )}
-              </div>
-            </div>
-          </aside>
 
-          <main className="col-span-12 md:col-span-9 min-w-0">
-            <div className="card p-5 builder-main-card">
-              <div className="builder-fixed-top">
-                <div className="flex items-center justify-between gap-3">
+                <div className="mt-5 rounded-xl bg-black/30 p-3">
+                  <div className="text-sm font-bold">Progress</div>
+
+                  <div className="mt-1 text-sm text-white/70 break-words">
+                    Species: {selectedSpecies || "Optional / Not selected"}
+                  </div>
+
+                  {!hasSpecies && (
+                    <>
+                      <div className="text-sm text-white/70">
+                        Features selected: {selectedCount}
+                      </div>
+
+                      <div className="text-sm text-white/70">
+                        Required: {completedRequired}/{REQUIRED_KEYS.length}
+                      </div>
+                    </>
+                  )}
+
+                  {hasSpecies && (
+                    <div className="text-sm text-lime-200 mt-1">
+                      Species prompt ready
+                    </div>
+                  )}
+                </div>
+              </div>
+            </aside>
+
+            <main className="col-span-12 lg:col-span-9 min-w-0">
+              <div className="card p-3 sm:p-4 md:p-5 builder-main-card overflow-hidden">
+                <div className="builder-fixed-top">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-white/60 text-sm">
+                        {hasSpecies ? "Selected Species" : "Currently Editing"}
+                      </div>
+
+                      <div className="text-lg sm:text-xl md:text-2xl font-extrabold break-words">
+                        {hasSpecies ? selectedSpecies : selectedRegion}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={!canProceed}
+                      className={
+                        canProceed
+                          ? "btn-primary w-full sm:w-auto"
+                          : "btn-ghost opacity-50 cursor-not-allowed w-full sm:w-auto"
+                      }
+                      onClick={() => nav("/prompt")}
+                    >
+                      Proceed to Prompt
+                    </button>
+                  </div>
+
+                  {hasSpecies && (
+                    <div className="mt-4 required-box">
+                      <div className="required-title">
+                        Predefined species prompt selected
+                      </div>
+
+                      <div className="required-sub mt-1">
+                        You do not need to select features. Click Proceed to
+                        Prompt to review and generate the bird image.
+                      </div>
+                    </div>
+                  )}
+
+                  {!hasSpecies && !canProceed && (
+                    <div className="mt-4 required-box">
+                      <div className="required-head flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                          <div className="required-title">
+                            Required selections
+                          </div>
+
+                          <div className="required-sub">
+                            Species is optional. Select these important features
+                            for a clean AI prompt.
+                          </div>
+                        </div>
+
+                        <div className="required-count self-start sm:self-auto">
+                          {completedRequired}/{REQUIRED_KEYS.length}
+                        </div>
+                      </div>
+
+                      <div className="required-chips">
+                        {REQUIRED_KEYS.map((k) => {
+                          const [region, feature] = k.split("|");
+                          const selected = !!selectedFeatures[k];
+                          const isCurrentRegion = region === selectedRegion;
+
+                          return (
+                            <button
+                              key={k}
+                              type="button"
+                              onClick={() => setSelectedRegion(region)}
+                              className={[
+                                "required-chip",
+                                selected
+                                  ? "required-chip-done"
+                                  : "required-chip-missing",
+                                isCurrentRegion ? "required-chip-focus" : "",
+                              ].join(" ")}
+                            >
+                              <span className="required-chip-dot" />
+                              {feature}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="builder-features-scroll">
+                  {hasSpecies ? (
+                    <div className="card p-4 sm:p-6 text-white/80">
+                      <div className="text-lg sm:text-xl font-extrabold text-lime-200 break-words">
+                        {selectedSpecies}
+                      </div>
+
+                      <p className="mt-2 text-sm text-white/60">
+                        Predefined prompt is ready for this bird species. No
+                        feature selection is required.
+                      </p>
+                    </div>
+                  ) : (
+                    <FeaturesMenu
+                      selectedRegion={selectedRegion}
+                      selectedFeatures={selectedFeatures}
+                      onSelectFeature={onSelectFeature}
+                      onClearFeature={onClearFeature}
+                    />
+                  )}
+                </div>
+
+                <div className="builder-prompt-footer">
                   <div>
-                    <div className="text-white/60 text-sm">
-                      {hasSpecies ? "Selected Species" : "Currently Editing"}
+                    <div className="font-bold mb-2">Live Prompt Preview</div>
+
+                    <div className="builder-prompt-text break-words overflow-x-auto text-sm sm:text-base">
+                      {result.positive}
                     </div>
-
-                    <div className="text-2xl font-extrabold">
-                      {hasSpecies ? selectedSpecies : selectedRegion}
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled={!canProceed}
-                    className={
-                      canProceed
-                        ? "btn-primary"
-                        : "btn-ghost opacity-50 cursor-not-allowed"
-                    }
-                    onClick={() => nav("/prompt")}
-                  >
-                    Proceed to Prompt
-                  </button>
-                </div>
-
-                {hasSpecies && (
-                  <div className="mt-4 required-box">
-                    <div className="required-title">
-                      Predefined species prompt selected
-                    </div>
-
-                    <div className="required-sub mt-1">
-                      You do not need to select features. Click Proceed to
-                      Prompt to review and generate the bird image.
-                    </div>
-                  </div>
-                )}
-
-                {!hasSpecies && !canProceed && (
-                  <div className="mt-4 required-box">
-                    <div className="required-head">
-                      <div>
-                        <div className="required-title">
-                          Required selections
-                        </div>
-
-                        <div className="required-sub">
-                          Species is optional. Select these important features
-                          for a clean AI prompt.
-                        </div>
-                      </div>
-
-                      <div className="required-count">
-                        {completedRequired}/{REQUIRED_KEYS.length}
-                      </div>
-                    </div>
-
-                    <div className="required-chips">
-                      {REQUIRED_KEYS.map((k) => {
-                        const [region, feature] = k.split("|");
-                        const selected = !!selectedFeatures[k];
-                        const isCurrentRegion = region === selectedRegion;
-
-                        return (
-                          <button
-                            key={k}
-                            type="button"
-                            onClick={() => setSelectedRegion(region)}
-                            className={[
-                              "required-chip",
-                              selected
-                                ? "required-chip-done"
-                                : "required-chip-missing",
-                              isCurrentRegion ? "required-chip-focus" : "",
-                            ].join(" ")}
-                          >
-                            <span className="required-chip-dot" />
-                            {feature}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="builder-features-scroll">
-                {hasSpecies ? (
-                  <div className="card p-6 text-white/80">
-                    <div className="text-xl font-extrabold text-lime-200">
-                      {selectedSpecies}
-                    </div>
-
-                    <p className="mt-2 text-sm text-white/60">
-                      Predefined prompt is ready for this bird species. No
-                      feature selection is required.
-                    </p>
-                  </div>
-                ) : (
-                  <FeaturesMenu
-                    selectedRegion={selectedRegion}
-                    selectedFeatures={selectedFeatures}
-                    onSelectFeature={onSelectFeature}
-                    onClearFeature={onClearFeature}
-                  />
-                )}
-              </div>
-
-              <div className="builder-prompt-footer">
-                <div>
-                  <div className="font-bold mb-2">Live Prompt Preview</div>
-                  <div className="builder-prompt-text">
-                    {result.positive}
                   </div>
                 </div>
               </div>
-            </div>
-          </main>
+            </main>
+          </div>
         </div>
       </div>
     </div>
