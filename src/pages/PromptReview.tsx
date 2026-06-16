@@ -5,7 +5,8 @@ import Navbar from "../components/Navbar";
 
 import { loadSelected, loadSpecies } from "../storage";
 import { buildPrompt } from "../prompt";
-import { generateBirdImage } from "../api";
+// import { generateBirdImage } from "../api";
+import { generateBirdImage } from "../services/sd35";
 
 import downloadIcon from "../assets/icons/download.svg";
 import birdsHouse from "../assets/icons/birds_house.svg";
@@ -44,10 +45,10 @@ export default function PromptReview() {
         negativePrompt
       );
 
-      setImage(data.image);
-    } catch {
+      setImage("data:image/png;base64," + data.image);
+    } catch (e) {
       setErr(
-        "Generation failed. Make sure backend and Automatic1111 are running."
+        "Error generating image."
       );
     } finally {
       setLoading(false);
@@ -204,7 +205,7 @@ export default function PromptReview() {
                     <img
                       src={image}
                       alt="Generated bird"
-                      className="preview-result-image"
+                      className="w-full h-full object-cover rounded-xl"
                     />
 
                     <button
