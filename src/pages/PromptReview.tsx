@@ -6,8 +6,8 @@ import Navbar from "../components/Navbar";
 import { loadSelected, loadSpecies } from "../storage";
 import { buildPrompt } from "../prompt";
 // import { generateBirdImage } from "../api";
-import { generateBirdImage } from "../services/sd35";
-// import { generateBirdImage } from "../services/sd15-dreambooth";
+// import { generateBirdImage } from "../services/sd35";
+import { generateBirdImage } from "../services/sd15-dreambooth";
 
 
 import downloadIcon from "../assets/icons/download.svg";
