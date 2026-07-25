@@ -1,3 +1,26 @@
+import {
+  Bird,
+  Smile,
+  Crown,
+  Feather,
+  CircleDot,
+  Footprints,
+  Waves,
+  Sparkles,
+} from "lucide-react";
+
+const regions = [
+  { name: "Whole", icon: Bird, hint: "Body, size, main colors" },
+  { name: "Beak", icon: Smile, hint: "Bill shape and color" },
+  { name: "Head", icon: Crown, hint: "Crest, mask, eye details" },
+  { name: "Wings", icon: Feather, hint: "Wing shape and pattern" },
+  { name: "Breast", icon: CircleDot, hint: "Chest color and texture" },
+  { name: "Belly", icon: CircleDot, hint: "Lower body details" },
+  { name: "Back", icon: Feather, hint: "Back color and pattern" },
+  { name: "Feet", icon: Footprints, hint: "Leg and feet color" },
+  { name: "Tail", icon: Waves, hint: "Tail shape and style" },
+];
+
 export default function RegionMenu({
   selectedRegion,
   setSelectedRegion,
@@ -5,45 +28,29 @@ export default function RegionMenu({
   selectedRegion: string;
   setSelectedRegion: (region: string) => void;
 }) {
-  const regions = [
-    "Whole",
-    "Beak",
-    "Head",
-    "Wings",
-    "Breast",
-    "Belly",
-    "Back",
-    "Feet",
-    "Tail",
-  ];
-
   return (
-    <div className="flex flex-col gap-2">
-      {regions.map((r) => {
-        const active = r === selectedRegion;
+    <div className="region-grid">
+      {regions.map((item) => {
+        const active = item.name === selectedRegion;
+        const Icon = item.icon;
 
         return (
           <button
-            key={r}
+            key={item.name}
             type="button"
-            onClick={() => setSelectedRegion(r)}
-            className={[
-              "group w-full text-left rounded-xl px-3 py-2 transition",
-              "border bg-white/[0.04] hover:bg-white/[0.08] active:scale-[0.99]",
-              active
-                ? "border-lime-400/40 bg-lime-400/10 shadow-[0_0_0_1px_rgba(163,230,53,0.15)_inset]"
-                : "border-white/10",
-            ].join(" ")}
+            onClick={() => setSelectedRegion(item.name)}
+            className={active ? "region-card region-card-active" : "region-card"}
           >
-            <div className="flex items-center justify-between">
-              <span className={active ? "text-lime-100 font-semibold" : "text-white/75"}>
-                {r}
-              </span>
+            <span className="region-card-icon">
+              <Icon size={18} />
+            </span>
 
-              <span className={active ? "text-lime-300" : "text-white/25"}>
-                ›
-              </span>
-            </div>
+            <span className="region-card-text">
+              <strong>{item.name}</strong>
+              <small>{item.hint}</small>
+            </span>
+
+            {active && <Sparkles size={15} className="region-spark" />}
           </button>
         );
       })}

@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RotateCcw, Sparkles } from "lucide-react";
 
+import SpeciesPicker from "../components/ui/SpeciesPicker";
 import Navbar from "../components/Navbar";
 import RegionMenu from "../components/RegionMenu";
 import FeaturesMenu from "../components/FeaturesMenu";
+import ModelSelector from "../components/ModelSelector";
 
 import { buildPrompt, REQUIRED_KEYS } from "../prompt";
 import {
@@ -12,15 +15,21 @@ import {
   clearSelected,
   loadSpecies,
   saveSpecies,
+  loadModel,
+  saveModel,
   type SelectedFeatures,
 } from "../storage";
+
 import { BIRD_SPECIES } from "../data/species";
+import type { ModelType } from "../api/generateBirdImage";
 
 export default function GenerateBird() {
   const nav = useNavigate();
 
   const [selectedRegion, setSelectedRegion] = useState("Whole");
   const [selectedSpecies, setSelectedSpecies] = useState(() => loadSpecies());
+  const [selectedModel, setSelectedModel] = useState<ModelType>(() => loadModel());
+
   const [selectedFeatures, setSelectedFeatures] =
     useState<SelectedFeatures>(() => loadSelected());
 
@@ -39,6 +48,10 @@ export default function GenerateBird() {
     saveSpecies(selectedSpecies);
   }, [selectedSpecies]);
 
+  useEffect(() => {
+    saveModel(selectedModel);
+  }, [selectedModel]);
+
   const canProceed = hasSpecies
     ? result.blockedReasons.length === 0
     : result.missing.length === 0 && result.blockedReasons.length === 0;
@@ -48,6 +61,10 @@ export default function GenerateBird() {
   const completedRequired = REQUIRED_KEYS.filter(
     (k) => selectedFeatures[k]
   ).length;
+
+  const progress = hasSpecies
+    ? 100
+    : Math.round((completedRequired / REQUIRED_KEYS.length) * 100);
 
   const onSelectFeature = (
     key: string,
@@ -85,72 +102,78 @@ export default function GenerateBird() {
     clearSelected();
     setSelectedFeatures({});
     setSelectedSpecies("");
+    setSelectedRegion("Whole");
+    setSelectedModel("lora");
   }
 
   return (
     <div className="min-h-screen bg-hero">
-      <div className="min-h-screen bg-black/55">
+      <div className="min-h-screen page-overlay">
         <Navbar />
 
-        <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 py-4 md:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <aside className="col-span-12 lg:col-span-3">
-              <div className="card p-3 sm:p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="font-extrabold text-base sm:text-lg">
-                    Bird Builder
+        <main className="builder-page">
+          <section className="builder-hero">
+            <div>
+              <div className="home-kicker">LoRA Powered Bird Generator</div>
+
+              <h1 className="builder-title">
+                Design a realistic bird from visual traits
+              </h1>
+
+              <p className="builder-subtitle">
+                Choose a species or build a bird from natural features. BirdsGen
+                converts your selections into a clean Stable Diffusion prompt
+                and generates the image using your selected model.
+              </p>
+            </div>
+
+            <div className="model-pill">
+              <Sparkles size={17} />
+              <span>LoRA / SD 3.5 / DreamBooth</span>
+            </div>
+          </section>
+
+          <div className="builder-layout">
+            <aside className="builder-sidebar">
+              <div className="panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Bird Builder</h2>
+                    <p>Species or feature mode</p>
                   </div>
 
-                  <button
-                    className="btn-ghost shrink-0"
-                    type="button"
-                    onClick={resetAll}
-                  >
-                    Reset
+                  <button className="icon-btn" type="button" onClick={resetAll}>
+                    <RotateCcw size={17} />
                   </button>
                 </div>
 
-                <div className="mt-4">
-                  <div className="text-sm font-bold mb-2">
-                    Bird Species{" "}
-                    <span className="text-white/40">(Optional)</span>
-                  </div>
+                <div className="field-block">
+                  <label>AI Model</label>
 
-                  <select
-                    className="w-full rounded-xl border border-white/10 bg-[#111] px-3 sm:px-4 py-3 text-white outline-none cursor-pointer text-sm sm:text-base"
+                  <ModelSelector
+                    value={selectedModel}
+                    onChange={setSelectedModel}
+                  />
+                </div>
+
+                <div className="field-block">
+                  <label>Bird Species</label>
+
+                  <SpeciesPicker
                     value={selectedSpecies}
-                    onChange={(e) => handleSpeciesChange(e.target.value)}
-                  >
-                    <option
-                      value=""
-                      style={{
-                        backgroundColor: "#111",
-                        color: "white",
-                      }}
-                    >
-                      No species, use features only
-                    </option>
+                    options={BIRD_SPECIES}
+                    onChange={handleSpeciesChange}
+                  />
 
-                    {BIRD_SPECIES.map((s) => (
-                      <option
-                        key={s}
-                        value={s}
-                        style={{
-                          backgroundColor: "#111",
-                          color: "white",
-                        }}
-                      >
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                  <p className="selector-help">
+                    Choose a known species or build a realistic bird from visual
+                    traits.
+                  </p>
                 </div>
 
                 {!hasSpecies && (
-                  <div className="mt-5">
-                    <div className="text-sm font-bold mb-2">
-                      Feature Regions
-                    </div>
+                  <div className="field-block">
+                    <label>Feature Regions</label>
 
                     <RegionMenu
                       selectedRegion={selectedRegion}
@@ -159,90 +182,96 @@ export default function GenerateBird() {
                   </div>
                 )}
 
-                <div className="mt-5 rounded-xl bg-black/30 p-3">
-                  <div className="text-sm font-bold">Progress</div>
-
-                  <div className="mt-1 text-sm text-white/70 break-words">
-                    Species: {selectedSpecies || "Optional / Not selected"}
+                <div className="progress-box">
+                  <div className="progress-top">
+                    <span>Prompt Readiness</span>
+                    <strong>{progress}%</strong>
                   </div>
 
-                  {!hasSpecies && (
-                    <>
-                      <div className="text-sm text-white/70">
-                        Features selected: {selectedCount}
-                      </div>
+                  <div className="progress-track">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
 
-                      <div className="text-sm text-white/70">
-                        Required: {completedRequired}/{REQUIRED_KEYS.length}
-                      </div>
-                    </>
-                  )}
+                  <div className="progress-details">
+                    <span>
+                      Model:{" "}
+                      {selectedModel === "lora"
+                        ? "LoRA"
+                        : selectedModel === "sd35"
+                        ? "SD 3.5"
+                        : "DreamBooth"}
+                    </span>
 
-                  {hasSpecies && (
-                    <div className="text-sm text-lime-200 mt-1">
-                      Species prompt ready
-                    </div>
-                  )}
+                    <span>Species: {selectedSpecies || "Not selected"}</span>
+
+                    {!hasSpecies && (
+                      <>
+                        <span>Features: {selectedCount}</span>
+                        <span>
+                          Required: {completedRequired}/{REQUIRED_KEYS.length}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </aside>
 
-            <main className="col-span-12 lg:col-span-9 min-w-0">
-              <div className="card p-3 sm:p-4 md:p-5 builder-main-card overflow-hidden">
-                <div className="builder-fixed-top">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="text-white/60 text-sm">
-                        {hasSpecies ? "Selected Species" : "Currently Editing"}
-                      </div>
+            <section className="builder-main">
+              <div className="builder-main-top">
+                <div>
+                  <span className="eyebrow">
+                    {hasSpecies ? "Selected Species" : "Currently Editing"}
+                  </span>
 
-                      <div className="text-lg sm:text-xl md:text-2xl font-extrabold break-words">
-                        {hasSpecies ? selectedSpecies : selectedRegion}
-                      </div>
-                    </div>
+                  <h2>{hasSpecies ? selectedSpecies : selectedRegion}</h2>
+                </div>
 
-                    <button
-                      type="button"
-                      disabled={!canProceed}
-                      className={
-                        canProceed
-                          ? "btn-primary w-full sm:w-auto"
-                          : "btn-ghost opacity-50 cursor-not-allowed w-full sm:w-auto"
-                      }
-                      onClick={() => nav("/prompt")}
-                    >
-                      Proceed to Prompt
-                    </button>
-                  </div>
+                <button
+                  type="button"
+                  disabled={!canProceed}
+                  className={canProceed ? "btn-primary big" : "btn-disabled big"}
+                  onClick={() =>
+                    nav("/prompt", {
+                      state: {
+                        model: selectedModel,
+                      },
+                    })
+                  }
+                >
+                  Proceed to Prompt
+                </button>
+              </div>
 
-                  {hasSpecies && (
-                    <div className="mt-4 required-box">
-                      <div className="required-title">
-                        Predefined species prompt selected
-                      </div>
-
-                      <div className="required-sub mt-1">
-                        You do not need to select features. Click Proceed to
-                        Prompt to review and generate the bird image.
-                      </div>
-                    </div>
-                  )}
-
-                  {!hasSpecies && !canProceed && (
-                    <div className="mt-4 required-box">
-                      <div className="required-head flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              {hasSpecies ? (
+                <div className="species-ready-card">
+                  <div className="species-ready-icon">🪶</div>
+                  <h3>{selectedSpecies}</h3>
+                  <p>
+                    Predefined species profile is ready. You can proceed directly
+                    to prompt review and generation.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {!canProceed && (
+                    <div className="required-box">
+                      <div className="required-head">
                         <div>
                           <div className="required-title">
                             Required selections
                           </div>
 
                           <div className="required-sub">
-                            Species is optional. Select these important features
-                            for a clean AI prompt.
+                            Choose these core traits so the generated bird stays
+                            natural and believable.
                           </div>
                         </div>
 
-                        <div className="required-count self-start sm:self-auto">
+                        <div className="required-count">
                           {completedRequired}/{REQUIRED_KEYS.length}
                         </div>
                       </div>
@@ -274,43 +303,27 @@ export default function GenerateBird() {
                       </div>
                     </div>
                   )}
+
+                  <FeaturesMenu
+                    selectedRegion={selectedRegion}
+                    selectedFeatures={selectedFeatures}
+                    onSelectFeature={onSelectFeature}
+                    onClearFeature={onClearFeature}
+                  />
+                </>
+              )}
+
+              <div className="live-prompt-box">
+                <div className="live-prompt-head">
+                  <strong>Live Prompt Preview</strong>
+                  <span>{result.positive.length} characters</span>
                 </div>
 
-                <div className="builder-features-scroll">
-                  {hasSpecies ? (
-                    <div className="card p-4 sm:p-6 text-white/80">
-                      <div className="text-lg sm:text-xl font-extrabold text-lime-200 break-words">
-                        {selectedSpecies}
-                      </div>
-
-                      <p className="mt-2 text-sm text-white/60">
-                        Predefined prompt is ready for this bird species. No
-                        feature selection is required.
-                      </p>
-                    </div>
-                  ) : (
-                    <FeaturesMenu
-                      selectedRegion={selectedRegion}
-                      selectedFeatures={selectedFeatures}
-                      onSelectFeature={onSelectFeature}
-                      onClearFeature={onClearFeature}
-                    />
-                  )}
-                </div>
-
-                <div className="builder-prompt-footer">
-                  <div>
-                    <div className="font-bold mb-2">Live Prompt Preview</div>
-
-                    <div className="builder-prompt-text break-words overflow-x-auto text-sm sm:text-base">
-                      {result.positive}
-                    </div>
-                  </div>
-                </div>
+                <p>{result.positive}</p>
               </div>
-            </main>
+            </section>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

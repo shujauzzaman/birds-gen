@@ -1,5 +1,6 @@
 const SELECTED_KEY = "birdgen_selected_features";
 const SPECIES_KEY = "birdgen_selected_species";
+const MODEL_KEY = "birdgen_selected_model";
 
 export type SelectedFeature = {
   name: string;
@@ -9,6 +10,8 @@ export type SelectedFeature = {
 };
 
 export type SelectedFeatures = Record<string, SelectedFeature>;
+
+export type StoredModelType = "lora" | "sd35" | "dreambooth";
 
 export function loadSelected(): SelectedFeatures {
   try {
@@ -33,4 +36,18 @@ export function loadSpecies() {
 
 export function saveSpecies(species: string) {
   localStorage.setItem(SPECIES_KEY, species);
+}
+
+export function loadModel(): StoredModelType {
+  const value = localStorage.getItem(MODEL_KEY);
+
+  if (value === "lora" || value === "sd35" || value === "dreambooth") {
+    return value;
+  }
+
+  return "lora";
+}
+
+export function saveModel(model: StoredModelType) {
+  localStorage.setItem(MODEL_KEY, model);
 }

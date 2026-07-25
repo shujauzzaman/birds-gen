@@ -1,36 +1,50 @@
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { Bird, Menu, X, Sparkles } from "lucide-react";
 
 export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    [
-      "px-2 py-1 text-sm font-semibold transition relative",
-      isActive ? "text-lime-300" : "text-white/70 hover:text-white",
-    ].join(" ");
+    ["nav-link", isActive ? "nav-link-active" : ""].join(" ");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-5">
-      <div className="glass px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-extrabold tracking-tight">
-          <span className="text-lg">BirdsGen</span>
-          <span className="text-lime-300">🍃</span>
+    <header className="topbar">
+      <nav className="topbar-inner">
+        <Link to="/" className="brand" onClick={() => setOpen(false)}>
+          <span className="brand-mark">
+            <Bird size={19} />
+          </span>
+
+          <span className="brand-text">
+            <strong>BirdsGen</strong>
+            <small>LoRA Bird Studio</small>
+          </span>
         </Link>
 
-        <div className="flex items-center gap-6">
-          <NavLink to="/" className={linkClass} end>
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+
+        <div className={open ? "nav-menu nav-menu-open" : "nav-menu"}>
+          <NavLink to="/" className={linkClass} end onClick={() => setOpen(false)}>
             Home
-            <span className="absolute left-0 -bottom-2 h-[2px] w-full bg-lime-300/0 transition-all" />
           </NavLink>
 
-          <NavLink to="/generate" className={linkClass}>
-            Generate
-            <span className="absolute left-0 -bottom-2 h-[2px] w-full bg-lime-300/0 transition-all" />
+          <NavLink to="/generate" className={linkClass} onClick={() => setOpen(false)}>
+            Generator
           </NavLink>
 
-          <span className="text-sm font-semibold text-white/55 cursor-default">
-            Gallery
-          </span>
+          <Link to="/generate" className="nav-cta" onClick={() => setOpen(false)}>
+            <Sparkles size={15} />
+            Start
+          </Link>
         </div>
-      </div>
-    </div>
+      </nav>
+    </header>
   );
 }

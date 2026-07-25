@@ -20,9 +20,11 @@ export default function FeatureCard({
       onClick={onClick}
       className={selected ? "feature-card feature-card-selected" : "feature-card"}
     >
+      <div className="feature-card-glow" />
+
       {selected && (
-        <div className="feature-check-only">
-          <Check size={16} strokeWidth={4} />
+        <div className="feature-check">
+          <Check size={15} strokeWidth={4} />
         </div>
       )}
 

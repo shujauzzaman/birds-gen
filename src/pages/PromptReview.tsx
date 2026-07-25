@@ -1,25 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Download, Sparkles, Wand2 } from "lucide-react";
 
 import Navbar from "../components/Navbar";
 
-import { loadSelected, loadSpecies } from "../storage";
+import { loadSelected, loadSpecies, loadModel } from "../storage";
 import { buildPrompt } from "../prompt";
-import { generateBirdImage } from "../api";
+import {
+  generateBirdImage,
+  MODEL_LABELS,
+  type ModelType,
+} from "../api/generateBirdImage";
 
-import downloadIcon from "../assets/icons/download.svg";
 import birdsHouse from "../assets/icons/birds_house.svg";
 
 export default function PromptReview() {
+  const location = useLocation();
+
+  const selectedModel: ModelType = location.state?.model || loadModel();
+
   const selected = useMemo(() => loadSelected(), []);
   const species = useMemo(() => loadSpecies(), []);
 
   const hasSpecies = species.trim().length > 0;
 
-  const res = useMemo(
-    () => buildPrompt(selected, species),
-    [selected, species]
-  );
+  const res = useMemo(() => buildPrompt(selected, species), [selected, species]);
 
   const [positivePrompt, setPositivePrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("");
@@ -40,15 +45,15 @@ export default function PromptReview() {
       setLoading(true);
 
       const data = await generateBirdImage(
+        selectedModel,
         positivePrompt,
         negativePrompt
       );
 
       setImage(data.image);
-    } catch {
-      setErr(
-        "Generation failed. Make sure backend and Automatic1111 are running."
-      );
+    } catch (e: any) {
+      console.error("Generation error:", e);
+      setErr(e?.message || "Generation failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,21 +63,16 @@ export default function PromptReview() {
     if (!image) return;
 
     const response = await fetch(image);
-
     const blob = await response.blob();
-
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
 
     a.href = url;
-
-    a.download = `birdsgen-${Date.now()}.png`;
+    a.download = `birdsgen-${selectedModel}-${Date.now()}.png`;
 
     document.body.appendChild(a);
-
     a.click();
-
     document.body.removeChild(a);
 
     URL.revokeObjectURL(url);
@@ -86,62 +86,68 @@ export default function PromptReview() {
 
   return (
     <div className="min-h-screen bg-hero">
-      <div className="min-h-screen site-overlay">
+      <div className="min-h-screen page-overlay">
         <Navbar />
 
-        <main className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 pt-6 md:pt-8 pb-10">
+        <main className="preview-page">
+          <div className="preview-header">
+            <div>
+              <div className="home-kicker">Prompt Review</div>
+
+              <h1>Generate your final bird image</h1>
+
+              <p>
+                Review the prompt, adjust details if needed, then generate using
+                the selected BirdsGen model.
+              </p>
+            </div>
+
+            <div className="model-pill">
+              <Sparkles size={17} />
+              <span>{MODEL_LABELS[selectedModel]} Inference</span>
+            </div>
+          </div>
+
           <div className="preview-layout">
-            {/* LEFT */}
             <section className="preview-left">
               <div className="preview-prompt-card">
                 <div className="preview-card-label">
-                  Prompt Preview
+                  <Wand2 size={14} />
+                  Positive Prompt
                 </div>
 
                 <textarea
                   value={positivePrompt}
-                  onChange={(e) =>
-                    setPositivePrompt(e.target.value)
-                  }
-                  placeholder="Describe the bird you want to bring to life..."
+                  onChange={(e) => setPositivePrompt(e.target.value)}
+                  placeholder="Describe the bird you want to generate..."
                   className="preview-prompt-textarea"
                 />
 
-                {/* hidden negative prompt */}
                 <textarea
                   value={negativePrompt}
-                  onChange={(e) =>
-                    setNegativePrompt(e.target.value)
-                  }
+                  onChange={(e) => setNegativePrompt(e.target.value)}
                   className="hidden"
                 />
               </div>
 
-              {/* species selected badge */}
               {hasSpecies && (
-                <div className="mt-4 rounded-2xl border border-lime-400/30 bg-lime-400/10 px-4 py-3">
-                  <div className="text-sm font-bold text-lime-200">
-                    Using predefined species prompt
-                  </div>
-
-                  <div className="mt-1 text-sm text-white/70 break-words">
-                    Species: {species}
-                  </div>
+                <div className="species-badge">
+                  <strong>Using predefined species prompt</strong>
+                  <span>Species: {species}</span>
                 </div>
               )}
 
-              {/* feature mode info */}
               {!hasSpecies && (
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                  <div className="text-sm font-bold text-white">
-                    Feature-based generation
-                  </div>
-
-                  <div className="mt-1 text-sm text-white/60">
-                    Prompt generated from selected bird features.
-                  </div>
+                <div className="species-badge neutral">
+                  <strong>Feature-based generation</strong>
+                  <span>Prompt generated from selected visual features.</span>
                 </div>
               )}
+
+              <div className="species-badge neutral">
+                <strong>Selected Model</strong>
+                <span>{MODEL_LABELS[selectedModel]}</span>
+              </div>
 
               <button
                 type="button"
@@ -154,39 +160,27 @@ export default function PromptReview() {
                 }
               >
                 {loading
-                  ? "Generating..."
-                  : "Generate"}
+                  ? "Generating realistic bird..."
+                  : `Generate Bird with ${MODEL_LABELS[selectedModel]}`}
               </button>
 
               <div className="preview-actions">
-                <Link
-                  to="/generate"
-                  className="preview-back-btn"
-                >
+                <Link to="/generate" className="preview-back-btn">
                   Back
                 </Link>
               </div>
 
               {!hasSpecies && res.missing.length > 0 && (
                 <div className="preview-warning">
-                  Missing:
-                  {" "}
-                  {res.missing.join(", ")}
+                  Missing: {res.missing.join(", ")}
                 </div>
               )}
 
-              {err && (
-                <div className="preview-error">
-                  {err}
-                </div>
-              )}
+              {err && <div className="preview-error">{err}</div>}
             </section>
 
-            {/* RIGHT */}
             <section className="preview-right">
-              <h1 className="preview-title">
-                Generated Bird
-              </h1>
+              <h2 className="preview-title">Generated Bird</h2>
 
               <div className="preview-result-card">
                 {loading ? (
@@ -196,7 +190,8 @@ export default function PromptReview() {
                     <p>Generating your bird</p>
 
                     <span>
-                      Please wait while BirdsGen creates it
+                      First generation can take 20–40 seconds while the model
+                      wakes up.
                     </span>
                   </div>
                 ) : image ? (
@@ -213,11 +208,7 @@ export default function PromptReview() {
                       className="preview-download-icon-btn"
                       onClick={downloadImage}
                     >
-                      <img
-                        src={downloadIcon}
-                        alt="download"
-                        className="preview-download-icon"
-                      />
+                      <Download size={20} />
                     </button>
                   </div>
                 ) : (
@@ -228,11 +219,9 @@ export default function PromptReview() {
                       className="preview-empty-svg"
                     />
 
-                    <p>Your bird will show up here</p>
+                    <p>Your bird will appear here</p>
 
-                    <span>
-                      Nothing to show yet
-                    </span>
+                    <span>Ready when you are</span>
                   </div>
                 )}
               </div>
