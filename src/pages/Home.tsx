@@ -18,7 +18,7 @@ export default function Home() {
             <div className="hero-copy">
               <div className="product-badge">
                 <Sparkles size={15} />
-                Stable Diffusion 1.5 + BirdsGen LoRA
+                
               </div>
 
               <h1>
@@ -28,7 +28,7 @@ export default function Home() {
               <p>
                 BirdsGen is a research-focused AI image generation interface for
                 creating bird visuals using species profiles, anatomical features,
-                and a deployed LoRA model.
+                and a deployed LoRA , DreamBooth & SD 3.5 models.
               </p>
 
               <div className="hero-actions">
@@ -56,35 +56,32 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <strong>SD 1.5</strong>
+                  <strong>SD 1.5 & SD 3.5</strong>
                   <span>Base model</span>
                 </div>
 
-                <div>
-                  <strong>LoRA</strong>
-                  <span>Fine-tuned bird model</span>
-                </div>
+                
               </div>
             </div>
 
             <div className="hero-showcase">
               <div className="showcase-card showcase-main">
                 <img
-                  src="/images/home_images/Orange-chinned Parakeet.webp"
+                  src="/images/home_images/birdsgen-1779625888615.png"
                   alt="AI generated bird"
                 />
               </div>
 
               <div className="showcase-card showcase-floating">
                 <img
-                  src="/images/home_images/eclectus.jpg"
+                  src="/images/home_images/base4.png"
                   alt="AI generated parrot"
                 />
               </div>
 
               <div className="model-info-card">
                 <span>Model Pipeline</span>
-                <strong>Prompt → Modal API → LoRA → Image</strong>
+                <strong>Prompt → Modal→ Image</strong>
               </div>
             </div>
           </section>

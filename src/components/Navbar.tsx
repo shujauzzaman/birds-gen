@@ -18,7 +18,7 @@ export default function Navbar() {
 
           <span className="brand-text">
             <strong>BirdsGen</strong>
-            <small>LoRA Bird Studio</small>
+            <small>Generating birds images from text prompts</small>
           </span>
         </Link>
 
